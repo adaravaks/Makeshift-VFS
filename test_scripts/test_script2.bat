@@ -1,0 +1,1 @@
+python ..\main.py --vfs-path ..\ --script-path invalid-path

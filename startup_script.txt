@@ -1,0 +1,7 @@
+cd a
+cd %HOMEPATH%
+ls a a a
+conf-dump
+a a
+cd a
+cd b
