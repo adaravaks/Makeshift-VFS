@@ -18,3 +18,9 @@ First testing script displays the new functionality as well as proves that VFS s
 Second testing script shows that the VFS doesn't break even if user inputs invalid parameters:
 ![screenshot](/demo_screenshots/stage_2.4.png?raw=true)<br>
 ![screenshot](/demo_screenshots/stage_2.5.png?raw=true)<br>
+
+<h3>Stage 3</h3>
+I've implemented the real VFS class which will later be integrated into the GUI. As of now, VFS is capable of scanning real directories, traversing the directory trees, creating/removing files or directories without affecting the real directory which VFS scans at the start. Also, the GUI will now fail to start if vfs_path parameter is invalid (cause what's the point of VFS GUI if there's no VFS?):
+![screenshot](/demo_screenshots/stage_3_1.jpg?raw=true)<br>
+![screenshot](/demo_screenshots/stage_3_2.jpg?raw=true)<br>
+![screenshot](/demo_screenshots/stage_3_3.jpg?raw=true)<br>

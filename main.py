@@ -1,5 +1,4 @@
-import os
-from vfs import GUI_VFS
+from gui import GUI
 import argparse
 
 
@@ -12,6 +11,5 @@ if __name__ == '__main__':
         'vfs_path': args.vfs_path,
         'script_path': args.script_path
     }
-    print(config)
-    vfs = GUI_VFS(config)
+    vfs = GUI(config)
     vfs.launch_gui_window()

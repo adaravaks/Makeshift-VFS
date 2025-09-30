@@ -1,1 +1,2 @@
-python ..\main.py --vfs-path ..\ --script-path invalid-path
+python ..\main.py --vfs-path ..\invalid-path.aaa --script-path invalid-path
+pause
