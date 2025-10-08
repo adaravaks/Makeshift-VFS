@@ -1,7 +1,9 @@
-cd a
-cd %HOMEPATH%
-ls a a a
+cd subdir_1
+cd ..
 conf-dump
-a a
-cd a
-cd b
+ls
+ls -la
+tree .
+tree . -a
+tree subdir_1
+find . -name *.txt

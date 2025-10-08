@@ -25,3 +25,9 @@ I've implemented the real VFS class which will later be integrated into the GUI.
 ![screenshot](/demo_screenshots/stage_3_1.jpg?raw=true)<br>
 ![screenshot](/demo_screenshots/stage_3_2.jpg?raw=true)<br>
 ![screenshot](/demo_screenshots/stage_3_3.jpg?raw=true)<br>
+
+<h3>Stage 4</h3>
+I've implemented the "cd", "ls", "tree" and "find" commands, which work similarly to their UNIX-terminal counterparts:
+
+![screenshot](/demo_screenshots/stage_4_1.png?raw=true)<br>
+![screenshot](/demo_screenshots/stage_4_2.png?raw=true)<br>

@@ -1,19 +1,19 @@
 import os
-import time
 import tkinter as tk
 from tkinter import scrolledtext
 from vfs import VFS
 
+
 class GUI:
     def __init__(self, config):
-        self.valid_commands = {'ls', 'cd', 'conf-dump', 'exit'}
+        self.valid_commands = {'ls', 'cd', 'tree', 'find', 'conf-dump', 'exit'}
         self.config = config
         self.vfs = None
 
         self.root = tk.Tk(className='Tk', screenName='VFS')
         self.root.title('VFS')
 
-        self.output_field = tk.scrolledtext.ScrolledText(height=16, width=64)
+        self.output_field = tk.scrolledtext.ScrolledText(height=32, width=64)
         self.output_field.configure(state='disabled')
         self.output_field.grid(row=0, columnspan=2)
 
@@ -33,22 +33,23 @@ class GUI:
                 words.append(word)
         return ' '.join(words)
 
-    def _receive_input(self, event):
+    def _handle_input(self, event):
         command = event.widget.get()
         event.widget.delete(0, tk.END)
-        responses = self._process_input(command)
 
         self.output_field.configure(state='normal')
-        self.output_field.insert(tk.END, 'user@linux:~$ ' + command + '\n')
+        self.output_field.insert(tk.END, f'user@linux:~{self.vfs.current_path}$ ' + command + '\n')
+        responses = self._process_input(command)
         self.output_field.configure(state='disabled')
+        self.input_label.configure(text=f'user@linux:~{self.vfs.current_path}$ ')
         self._display_responses(responses)
 
-    def _receive_script_input(self, command):
-        responses = self._process_input(command)
-
+    def _handle_script_input(self, command):
         self.output_field.configure(state='normal')
-        self.output_field.insert(tk.END, 'user@linux:~$ ' + command + '\n')
+        self.output_field.insert(tk.END, f'user@linux:~{self.vfs.current_path}$ ' + command + '\n')
+        responses = self._process_input(command)
         self.output_field.configure(state='disabled')
+        self.input_label.configure(text=f'user@linux:~{self.vfs.current_path}$ ')
 
         for response in responses:
             if 'Unrecognised' in response or 'Invalid' in response:
@@ -64,6 +65,7 @@ class GUI:
                 return
             else:
                 self.output_field.insert(tk.END, response + '\n')
+        self.output_field.insert(tk.END, '\n')
         self.output_field.configure(state='disabled')
 
     def _process_input(self, input_command):
@@ -75,26 +77,31 @@ class GUI:
             return responses
 
         if first_word == 'ls':
-            responses.append(command)
+            responses.append(self.vfs.do_ls(command.split()[1:]))
         elif first_word == 'cd':
             if len(command.split()) != 2:
                 responses.append('Invalid arguments')
             else:
-                responses.append(command)
+                if not self.vfs.change_current_dir(command.split()[1]):
+                    responses.append(f'{command}: Invalid directory name or path')
         elif first_word == 'conf-dump':
             responses.append(f'VFS_PATH: {self.config['vfs_path']}')
             responses.append(f'SCRIPT_PATH: {self.config['script_path']}')
+        elif first_word == 'tree':
+            responses.append(self.vfs.do_tree(command.split()[1:]))
+        elif first_word == 'find':
+            responses.append(self.vfs.do_find(command.split()[1:]))
         elif first_word == 'exit':
             responses.append('EXIT')
 
         return responses
 
     def launch_gui_window(self):
-        self.input_line.bind('<Return>', self._receive_input)
-        self.output_field.configure(state='normal')
-        self.output_field.insert(tk.END, f'VFS_PATH: {self.config['vfs_path']}' + '\n')
-        self.output_field.insert(tk.END, f'SCRIPT_PATH: {self.config['script_path']}' + '\n')
-        self.output_field.configure(state='disabled')
+        self.input_line.bind('<Return>', self._handle_input)
+        # self.output_field.configure(state='normal')
+        # self.output_field.insert(tk.END, f'VFS_PATH: {self.config['vfs_path']}' + '\n')
+        # self.output_field.insert(tk.END, f'SCRIPT_PATH: {self.config['script_path']}' + '\n')
+        # self.output_field.configure(state='disabled')
 
         try:
             self.vfs = VFS(self.config['vfs_path'])
@@ -113,7 +120,7 @@ class GUI:
     def _execute_script(self):
         with open(self.config['script_path']) as f:
             for line in f.readlines():
-                if not self._receive_script_input(line.strip('\n')):  # if command triggers an error
+                if not self._handle_script_input(line.strip('\n')):  # if command triggers an error
                     self.output_field.configure(state='normal')
                     self.output_field.insert(tk.END, 'Error during command execution, exiting script.\n')
                     self.output_field.configure(state='disabled')

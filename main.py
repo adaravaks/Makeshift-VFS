@@ -4,8 +4,8 @@ import argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='VFS Emulator')
-    parser.add_argument('--vfs-path', type=str, help='Path to VFS physical location', default=None)
-    parser.add_argument('--script-path', type=str, help='Path to startup script', default=None)
+    parser.add_argument('--vfs-path', type=str, help='Path to VFS physical location', default='vfs_test_directory')
+    parser.add_argument('--script-path', type=str, help='Path to startup script', default='startup_script.txt')
     args = parser.parse_args()
     config = {
         'vfs_path': args.vfs_path,
