@@ -31,3 +31,9 @@ I've implemented the "cd", "ls", "tree" and "find" commands, which work similarl
 
 ![screenshot](/demo_screenshots/stage_4_1.png?raw=true)<br>
 ![screenshot](/demo_screenshots/stage_4_2.png?raw=true)<br>
+
+<h3>Stage 5</h3>
+Additionally, I've implemented "touch" and "rmdir" commands:
+
+![screenshot](/demo_screenshots/stage_5_1.png?raw=true)<br>
+![screenshot](/demo_screenshots/stage_5_2.png?raw=true)<br>

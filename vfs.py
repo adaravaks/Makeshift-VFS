@@ -277,3 +277,123 @@ class VFS:
     def _pattern_match(filename, pattern):
         import fnmatch
         return fnmatch.fnmatch(filename, pattern)
+
+    def do_touch(self, args=None) -> str:
+        if args is None:
+            args = []
+
+        if not args:
+            return "touch: missing file operand\n"
+
+        errors = []
+        for filepath in args:
+            success, error_msg = self._create_file(filepath)
+            if not success:
+                errors.append(f"touch: {error_msg}")
+
+        return "\n".join(errors) + "\n" if errors else ""
+
+    def _create_file(self, filepath) -> tuple[bool, str]:
+        if '/' in filepath:
+            parts = [p for p in filepath.strip('/').split('/') if p]
+            if not parts:
+                return False, "cannot touch '/': Is a directory"
+
+            filename = parts[-1]
+            dir_path = '/' + '/'.join(parts[:-1]) if len(parts) > 1 else '/'
+
+            original_dir = self.current_dir
+            original_path = self.current_path
+
+            if not self.change_current_dir(dir_path):
+                return False, f"cannot touch '{filepath}': No such directory"
+
+            if filename in self.current_dir.children:
+                existing_node = self.current_dir.children[filename]
+                if existing_node.is_dir:
+                    self.current_dir = original_dir
+                    self.current_path = original_path
+                    return False, f"cannot touch '{filepath}': Is a directory"
+            else:
+                self.add_node(filename, is_dir=False)
+
+            self.current_dir = original_dir
+            self.current_path = original_path
+
+        else:
+            if filepath in self.current_dir.children:
+                existing_node = self.current_dir.children[filepath]
+                if existing_node.is_dir:
+                    return False, f"cannot touch '{filepath}': Is a directory"
+            else:
+                self.add_node(filepath, is_dir=False)
+
+        return True, ""
+
+    def do_rmdir(self, args=None) -> str:
+        if args is None:
+            args = []
+
+        if not args:
+            return "rmdir: missing operand\n"
+
+        errors = []
+        for dirpath in args:
+            success, error_msg = self._remove_directory(dirpath)
+            if not success:
+                errors.append(f"rmdir: {error_msg}")
+
+        return "\n".join(errors) + "\n" if errors else ""
+
+    def _remove_directory(self, dirpath) -> tuple[bool, str]:
+        if '/' in dirpath:
+            parts = [p for p in dirpath.strip('/').split('/') if p]
+            if not parts:
+                return False, "failed to resolve path"
+
+            dir_name = parts[-1]
+            parent_path = '/' + '/'.join(parts[:-1]) if len(parts) > 1 else '/'
+
+            original_dir = self.current_dir
+            original_path = self.current_path
+
+            if not self.change_current_dir(parent_path):
+                return False, f"failed to remove '{dirpath}': No such file or directory"
+
+            if dir_name not in self.current_dir.children:
+                self.current_dir = original_dir
+                self.current_path = original_path
+                return False, f"failed to remove '{dirpath}': No such file or directory"
+
+            target_node = self.current_dir.children[dir_name]
+
+            if not target_node.is_dir:
+                self.current_dir = original_dir
+                self.current_path = original_path
+                return False, f"failed to remove '{dirpath}': Not a directory"
+
+            if target_node.children:
+                self.current_dir = original_dir
+                self.current_path = original_path
+                return False, f"failed to remove '{dirpath}': Directory not empty"
+
+            self.remove_node(dir_name)
+
+            self.current_dir = original_dir
+            self.current_path = original_path
+
+        else:
+            if dirpath not in self.current_dir.children:
+                return False, f"failed to remove '{dirpath}': No such file or directory"
+
+            target_node = self.current_dir.children[dirpath]
+
+            if not target_node.is_dir:
+                return False, f"failed to remove '{dirpath}': Not a directory"
+
+            if target_node.children:
+                return False, f"failed to remove '{dirpath}': Directory not empty"
+
+            self.remove_node(dirpath)
+
+        return True, ""

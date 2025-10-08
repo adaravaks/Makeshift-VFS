@@ -6,7 +6,7 @@ from vfs import VFS
 
 class GUI:
     def __init__(self, config):
-        self.valid_commands = {'ls', 'cd', 'tree', 'find', 'conf-dump', 'exit'}
+        self.valid_commands = {'ls', 'cd', 'tree', 'find', 'touch', 'rmdir', 'conf-dump', 'exit'}
         self.config = config
         self.vfs = None
 
@@ -91,6 +91,10 @@ class GUI:
             responses.append(self.vfs.do_tree(command.split()[1:]))
         elif first_word == 'find':
             responses.append(self.vfs.do_find(command.split()[1:]))
+        elif first_word == 'touch':
+            responses.append(self.vfs.do_touch(command.split()[1:]))
+        elif first_word == 'rmdir':
+            responses.append(self.vfs.do_rmdir(command.split()[1:]))
         elif first_word == 'exit':
             responses.append('EXIT')
 
