@@ -109,6 +109,7 @@ class GUI:
 
         try:
             self.vfs = VFS(self.config['vfs_path'])
+            self.root.title(f'{self.config['vfs_path'].split('\\')[-1]}')
         except (FileNotFoundError, NotADirectoryError):
             print('Invalid VFS path, unable to start the app.')
             return

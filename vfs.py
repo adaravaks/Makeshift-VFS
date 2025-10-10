@@ -227,11 +227,15 @@ class VFS:
         if args is None:
             args = []
 
-        if len(args) < 3 or args[1] != '-name':
+        if (len(args) < 3 or args[1] != '-name') and args:
             return "find: usage: find [path] -name 'pattern'\n"
 
-        start_path = args[0]
-        pattern = args[2]
+        if args:
+            start_path = args[0]
+            pattern = args[2]
+        else:
+            start_path = self.current_path
+            pattern = '*'
 
         original_dir = self.current_dir
         original_path = self.current_path
